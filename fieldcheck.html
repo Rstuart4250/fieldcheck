@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FieldCheck</title>
+<style>
+  :root {
+    --navy:      #0D1B2A;
+    --navy-mid:  #1B2E42;
+    --accent:    #1A6FD4;
+    --accent-lt: #EAF2FC;
+    --green:     #1A7A4A;
+    --green-lt:  #E6F5EE;
+    --yellow:    #C49800;
+    --yellow-lt: #FFFBE6;
+    --red:       #CC0000;
+    --red-lt:    #FCEAEA;
+    --gray-bg:   #F2F4F7;
+    --gray-mid:  #8A929E;
+    --border:    #DDE2EA;
+    --white:     #FFFFFF;
+    --text:      #0D1B2A;
+    --text-mid:  #3D4A5C;
+    --radius:    10px;
+    --font:      -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--font); background: var(--gray-bg); color: var(--text); min-height: 100vh; }
+
+  .header { background: var(--navy); padding: 16px 16px 14px; }
+  .header-brand { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  .header-equipment { font-size: 19px; font-weight: 800; color: #fff; line-height: 1.2; }
+  .header-sub { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+
+  #name-gate { padding: 20px 16px; }
+  .gate-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; }
+  .gate-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .gate-sub { font-size: 13px; color: var(--text-mid); margin-bottom: 16px; }
+
+  .field-label { font-size: 11px; font-weight: 700; color: var(--gray-mid); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; display: block; }
+  .field-input { width: 100%; padding: 12px 13px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 15px; font-family: var(--font); color: var(--text); background: var(--white); outline: none; transition: border-color 0.15s; }
+  .field-input:focus { border-color: var(--accent); }
+  .btn-start { width: 100%; padding: 14px; background: var(--navy); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; font-family: var(--font); cursor: pointer; margin-top: 14px; transition: background 0.15s; }
+  .btn-start:active { background: var(--navy-mid); }
+
+  #fc-form { display: none; padding: 14px 16px 44px; }
+
+  .section-label { font-size: 11px; font-weight: 700; color: var(--gray-mid); text-transform: uppercase; letter-spacing: 0.1em; margin: 18px 0 8px 2px; }
+
+  .tech-bar { background: var(--navy-mid); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 2px; }
+  .tech-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .tech-name-text { font-size: 14px; font-weight: 600; color: #fff; }
+  .tech-time-text { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 1px; }
+
+  .q-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 10px; }
+  .q-label { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+  .q-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .req-star { color: var(--red); font-size: 12px; margin-left: 2px; }
+
+  .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .t-btn { flex: 1; min-width: 60px; padding: 11px 8px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); font-size: 13px; font-weight: 600; font-family: var(--font); color: var(--text-mid); cursor: pointer; text-align: center; transition: all 0.15s; }
+  .t-btn.sel-green  { border-color: var(--green);  background: var(--green-lt);  color: var(--green); }
+  .t-btn.sel-yellow { border-color: var(--yellow); background: var(--yellow-lt); color: var(--yellow); }
+  .t-btn.sel-red    { border-color: var(--red);    background: var(--red-lt);    color: var(--red); }
+  .t-btn.sel-blue   { border-color: var(--accent); background: var(--accent-lt); color: var(--accent); }
+
+  .yn-group { display: flex; gap: 10px; }
+  .yn-btn { flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); font-size: 14px; font-weight: 700; font-family: var(--font); cursor: pointer; color: var(--gray-mid); transition: all 0.15s; }
+  .yn-btn.yn-yes.active { border-color: var(--green); background: var(--green-lt); color: var(--green); }
+  .yn-btn.yn-no.active  { border-color: var(--red);   background: var(--red-lt);   color: var(--red); }
+
+  .field-textarea { width: 100%; padding: 12px 13px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: var(--font); color: var(--text); background: var(--white); outline: none; resize: none; min-height: 88px; line-height: 1.5; transition: border-color 0.15s; }
+  .field-textarea:focus { border-color: var(--accent); }
+  .field-hint { font-size: 11px; color: var(--gray-mid); margin-top: 5px; }
+
+  .photo-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 22px 16px; text-align: center; cursor: pointer; background: var(--gray-bg); transition: all 0.15s; }
+  .photo-zone.has-photo { border-color: var(--accent); background: var(--accent-lt); border-style: solid; }
+  .photo-icon { font-size: 26px; margin-bottom: 7px; }
+  .photo-text { font-size: 13px; font-weight: 600; color: var(--text-mid); margin-bottom: 3px; }
+  .photo-sub  { font-size: 11px; color: var(--gray-mid); }
+  .photo-req-badge { display: inline-block; margin-top: 6px; background: var(--red-lt); color: var(--red); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; }
+  #photo-input { display: none; }
+  #photo-preview { display: none; margin-top: 12px; border-radius: 8px; overflow: hidden; }
+  #photo-preview img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
+  .photo-remove { margin-top: 8px; width: 100%; padding: 9px; background: none; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; color: var(--gray-mid); cursor: pointer; font-family: var(--font); }
+
+  .submit-area { margin-top: 20px; }
+  .btn-submit { width: 100%; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 800; font-family: var(--font); cursor: pointer; transition: background 0.15s; }
+  .btn-submit:active { background: #1558a8; }
+  .btn-submit:disabled { background: var(--border); color: var(--gray-mid); cursor: not-allowed; }
+  .error-bar { background: var(--red-lt); border: 1px solid rgba(204,0,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 10px; display: none; }
+
+  #loading-overlay { display: none; position: fixed; inset: 0; background: rgba(13,27,42,0.75); z-index: 100; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+  #loading-overlay.show { display: flex; }
+  .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; font-weight: 600; color: #fff; }
+
+  #success-screen { display: none; padding: 48px 24px; text-align: center; }
+  .success-circle { width: 68px; height: 68px; border-radius: 50%; background: var(--green-lt); border: 2px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 18px; }
+  .success-title { font-size: 21px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+  .success-sub { font-size: 14px; color: var(--text-mid); line-height: 1.5; margin-bottom: 22px; }
+  .success-ref { background: var(--accent-lt); border: 1px solid rgba(26,111,212,0.25); border-radius: 9px; padding: 14px 18px; margin-bottom: 24px; }
+  .success-ref-label { font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .success-ref-num { font-size: 24px; font-weight: 800; color: var(--navy); margin-top: 3px; }
+  .btn-new { width: 100%; padding: 14px; background: var(--navy); color: #fff; border: none; border-radius: 9px; font-size: 15px; font-weight: 700; font-family: var(--font); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════════════════════╗
+     ║  CONFIG — two lines you will ever need to touch     ║
+     ╠══════════════════════════════════════════════════════╣
+     ║  PHOTO_REQUIRED  false = optional  true = required  ║
+     ║  APPS_SCRIPT_URL paste your deployment URL here     ║
+     ╚══════════════════════════════════════════════════════╝ -->
+<script>
+  const PHOTO_REQUIRED  = false;
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuPdTO3UkjX_yvXMcKK1sZ9gy0szrbSfXI3z2mDSq2eRRyPP9JOLggmQGENOa1CClk/exec';
+</script>
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Submitting inspection…</div>
+</div>
+
+<div class="header" id="main-header">
+  <div class="header-brand">FieldCheck</div>
+  <div class="header-equipment" id="hdr-equipment">Loading…</div>
+  <div class="header-sub" id="hdr-sub">PM Inspection</div>
+</div>
+
+<div id="name-gate">
+  <div class="gate-card">
+    <div class="gate-title">Sign In</div>
+    <div class="gate-sub">Enter your name to begin this inspection.</div>
+    <label class="field-label" for="tech-name-input">Your Name</label>
+    <input class="field-input" id="tech-name-input" type="text" placeholder="First Last" autocomplete="name" autocorrect="off" autocapitalize="words">
+    <div class="error-bar" id="name-error">Please enter your name to continue.</div>
+    <button class="btn-start" onclick="startForm()">Begin Inspection &rarr;</button>
+  </div>
+</div>
+
+<div id="fc-form">
+
+  <div class="section-label">Inspector</div>
+  <div class="tech-bar">
+    <div class="tech-avatar" id="tech-avatar">?</div>
+    <div>
+      <div class="tech-name-text" id="tech-name-display">—</div>
+      <div class="tech-time-text" id="tech-time-display">—</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       QUESTIONS
+       To add a question:
+         1. Copy any q-card block below
+         2. Increment the q-num and data-qid
+         3. Change the label text and input type
+         4. Add a matching answer collector in submitForm()
+       data-required="true" blocks submission if unanswered
+  ══════════════════════════════════════════════════════ -->
+  <div class="section-label">Inspection</div>
+
+  <!-- Q1 — toggle / replace label + options when ready -->
+  <div class="q-card" data-qid="q1" data-required="true">
+    <div class="q-label">
+      <span class="q-num">1</span>
+      Question 1 — add your label here<span class="req-star">*</span>
+    </div>
+    <div class="toggle-group" id="q1-group">
+      <button class="t-btn" data-val="Option A" onclick="selectToggle('q1-group',this,'sel-green')">Option A</button>
+      <button class="t-btn" data-val="Option B" onclick="selectToggle('q1-group',this,'sel-yellow')">Option B</button>
+      <button class="t-btn" data-val="Option C" onclick="selectToggle('q1-group',this,'sel-red')">Option C</button>
+    </div>
+  </div>
+
+  <!-- Q2 — yes/no / replace label when ready -->
+  <div class="q-card" data-qid="q2" data-required="true">
+    <div class="q-label">
+      <span class="q-num">2</span>
+      Question 2 — add your label here<span class="req-star">*</span>
+    </div>
+    <div class="yn-group">
+      <button class="yn-btn yn-yes" id="q2-yes" onclick="setYN('q2',true)">YES</button>
+      <button class="yn-btn yn-no"  id="q2-no"  onclick="setYN('q2',false)">NO</button>
+    </div>
+  </div>
+
+  <!-- Q3 — text / replace label when ready -->
+  <div class="q-card" data-qid="q3" data-required="false">
+    <div class="q-label">
+      <span class="q-num">3</span>
+      Observations &amp; findings
+    </div>
+    <textarea class="field-textarea" id="q3-text" placeholder="Record any observations, readings, or findings…"></textarea>
+    <div class="field-hint">Leave blank if nothing to note.</div>
+  </div>
+
+  <!-- Add Q4 here when ready — copy any block above -->
+
+  <!-- PHOTO -->
+  <div class="section-label">Photo</div>
+  <div class="q-card">
+    <div class="q-label">
+      <span class="q-num">4</span>
+      Photo<span class="req-star" id="photo-req-star" style="display:none">*</span>
+    </div>
+    <div class="photo-zone" id="photo-zone" onclick="document.getElementById('photo-input').click()">
+      <div class="photo-icon">&#128247;</div>
+      <div class="photo-text">Tap to take or upload a photo</div>
+      <div class="photo-sub">Camera or camera roll</div>
+      <div class="photo-req-badge" id="photo-req-badge" style="display:none">Required</div>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" capture="environment" onchange="handlePhoto(this)">
+    <div id="photo-preview">
+      <img id="preview-img" src="" alt="Inspection photo">
+      <button class="photo-remove" onclick="removePhoto()">&#10005; Remove photo</button>
+    </div>
+    <div class="field-hint" id="photo-hint" style="margin-top:8px;">Optional — attach a photo if relevant.</div>
+  </div>
+
+  <div class="submit-area">
+    <div class="error-bar" id="submit-error"></div>
+    <button class="btn-submit" id="submit-btn" onclick="submitForm()">Submit Inspection</button>
+  </div>
+
+</div>
+
+<div id="success-screen">
+  <div class="success-circle">&#9989;</div>
+  <div class="success-title">Inspection Submitted</div>
+  <div class="success-sub">Logged and sent to your manager.</div>
+  <div class="success-ref">
+    <div class="success-ref-label">Reference</div>
+    <div class="success-ref-num" id="success-ref-num">#—</div>
+  </div>
+  <button class="btn-new" onclick="location.reload()">New Inspection</button>
+</div>
+
+<script>
+  var techName  = '';
+  var photoB64  = null;
+  var photoMime = null;
+  var ynState   = {};
+  var togState  = {};
+
+  window.onload = function () {
+    var params = new URLSearchParams(window.location.search);
+    var name   = params.get('name') || params.get('equipment') || 'Unknown Equipment';
+    var loc    = params.get('loc')  || params.get('location')  || '';
+    document.getElementById('hdr-equipment').textContent = decodeURIComponent(name);
+    if (loc) document.getElementById('hdr-sub').textContent = decodeURIComponent(loc);
+    if (PHOTO_REQUIRED) {
+      document.getElementById('photo-req-star').style.display  = 'inline';
+      document.getElementById('photo-req-badge').style.display = 'inline-block';
+      document.getElementById('photo-hint').textContent        = 'A photo is required before submitting.';
+    }
+  };
+
+  function startForm () {
+    var val = document.getElementById('tech-name-input').value.trim();
+    if (!val) { document.getElementById('name-error').style.display = 'block'; return; }
+    techName = val;
+    document.getElementById('name-gate').style.display = 'none';
+    document.getElementById('fc-form').style.display   = 'block';
+    var initials = val.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+    document.getElementById('tech-avatar').textContent       = initials;
+    document.getElementById('tech-name-display').textContent = val;
+    var now = new Date();
+    document.getElementById('tech-time-display').textContent =
+      now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) + ' · ' +
+      now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  }
+
+  document.getElementById('tech-name-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') startForm();
+  });
+
+  function selectToggle (groupId, btn, cls) {
+    document.getElementById(groupId).querySelectorAll('.t-btn').forEach(function(b){ b.className = 't-btn'; });
+    btn.className = 't-btn ' + cls;
+    togState[groupId] = btn.dataset.val;
+  }
+
+  function setYN (qid, val) {
+    ynState[qid] = val;
+    document.getElementById(qid+'-yes').classList.toggle('active', val === true);
+    document.getElementById(qid+'-no').classList.toggle('active',  val === false);
+  }
+
+  function handlePhoto (input) {
+    var file = input.files[0];
+    if (!file) return;
+    photoMime = file.type;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      photoB64 = e.target.result.split(',')[1];
+      document.getElementById('preview-img').src = e.target.result;
+      document.getElementById('photo-preview').style.display = 'block';
+      var zone = document.getElementById('photo-zone');
+      zone.classList.add('has-photo');
+      zone.querySelector('.photo-text').textContent = 'Photo attached';
+      zone.querySelector('.photo-sub').textContent  = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removePhoto () {
+    photoB64 = photoMime = null;
+    document.getElementById('photo-input').value = '';
+    document.getElementById('photo-preview').style.display = 'none';
+    var zone = document.getElementById('photo-zone');
+    zone.classList.remove('has-photo');
+    zone.querySelector('.photo-text').textContent = 'Tap to take or upload a photo';
+    zone.querySelector('.photo-sub').textContent  = 'Camera or camera roll';
+  }
+
+  function validate () {
+    var cards = document.querySelectorAll('.q-card[data-required="true"]');
+    for (var i = 0; i < cards.length; i++) {
+      var qid = cards[i].dataset.qid;
+      if (!qid) continue;
+      var answered = (togState[qid+'-group'] !== undefined) || (ynState[qid] !== undefined);
+      if (!answered) {
+        var labelEl = cards[i].querySelector('.q-label');
+        var label   = labelEl ? labelEl.textContent.replace('*','').trim() : ('Question ' + qid);
+        return 'Please answer: ' + label;
+      }
+    }
+    if (PHOTO_REQUIRED && !photoB64) return 'A photo is required before submitting.';
+    return null;
+  }
+
+  function submitForm () {
+    var err = validate();
+    if (err) { showErr(err); return; }
+    hideErr();
+    document.getElementById('loading-overlay').classList.add('show');
+    document.getElementById('submit-btn').disabled = true;
+
+    var params = new URLSearchParams(window.location.search);
+    var eqName = decodeURIComponent(params.get('name') || params.get('equipment') || 'Unknown');
+    var eqLoc  = decodeURIComponent(params.get('loc')  || params.get('location')  || '');
+
+    var payload = {
+      action:        'submitInspection',
+      techName:      techName,
+      timestamp:     new Date().toISOString(),
+      equipment:     eqName,
+      location:      eqLoc,
+      q1:            togState['q1-group'] || '',
+      q2:            ynState['q2'] !== undefined ? (ynState['q2'] ? 'YES' : 'NO') : '',
+      q3:            document.getElementById('q3-text').value.trim(),
+      photoBase64:   photoB64  || '',
+      photoMimeType: photoMime || '',
+      userAgent:     navigator.userAgent
+    };
+
+    fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(payload)
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      document.getElementById('loading-overlay').classList.remove('show');
+      if (data.success) {
+        document.getElementById('fc-form').style.display       = 'none';
+        document.getElementById('main-header').style.display   = 'none';
+        document.getElementById('success-ref-num').textContent = '#' + String(data.refNumber || 0).padStart(4,'0');
+        document.getElementById('success-screen').style.display = 'block';
+      } else {
+        showErr('Submission failed: ' + (data.error || 'Please try again.'));
+        document.getElementById('submit-btn').disabled = false;
+      }
+    })
+    .catch(function(){
+      document.getElementById('loading-overlay').classList.remove('show');
+      showErr('Network error — check your connection and try again.');
+      document.getElementById('submit-btn').disabled = false;
+    });
+  }
+
+  function showErr(msg){ var el=document.getElementById('submit-error'); el.textContent=msg; el.style.display='block'; el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  function hideErr(){ document.getElementById('submit-error').style.display='none'; }
+</script>
+</body>
+</html>
