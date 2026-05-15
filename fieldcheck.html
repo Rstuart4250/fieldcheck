@@ -134,10 +134,18 @@
 <div id="name-gate">
   <div class="gate-card">
     <div class="gate-title">Sign In</div>
-    <div class="gate-sub">Enter your name to begin this inspection.</div>
+    <div class="gate-sub">Enter your name and shift to begin this inspection.</div>
     <label class="field-label" for="tech-name-input">Your Name</label>
     <input class="field-input" id="tech-name-input" type="text" placeholder="First Last" autocomplete="name" autocorrect="off" autocapitalize="words">
-    <div class="error-bar" id="name-error">Please enter your name to continue.</div>
+    <label class="field-label" for="shift-select" style="margin-top:12px;">Shift</label>
+    <select class="field-input" id="shift-select">
+      <option value="">— Select your shift —</option>
+      <option value="A Shift">A Shift</option>
+      <option value="B Shift">B Shift</option>
+      <option value="C Shift">C Shift</option>
+      <option value="D Shift">D Shift</option>
+    </select>
+    <div class="error-bar" id="name-error">Please enter your name and select your shift.</div>
     <button class="btn-start" onclick="startForm()">Begin Inspection &rarr;</button>
   </div>
 </div>
@@ -208,6 +216,7 @@
 
 <script>
   var techName  = '';
+  var techShift = '';
   var photoB64  = null;
   var photoMime = null;
   var ynState   = {};
@@ -227,9 +236,11 @@
   };
 
   function startForm () {
-    var val = document.getElementById('tech-name-input').value.trim();
-    if (!val) { document.getElementById('name-error').style.display = 'block'; return; }
-    techName = val;
+    var val   = document.getElementById('tech-name-input').value.trim();
+    var shift = document.getElementById('shift-select').value;
+    if (!val || !shift) { document.getElementById('name-error').style.display = 'block'; return; }
+    techName  = val;
+    techShift = shift;
     document.getElementById('name-gate').style.display = 'none';
     document.getElementById('fc-form').style.display   = 'block';
     var initials = val.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
@@ -237,6 +248,7 @@
     document.getElementById('tech-name-display').textContent = val;
     var now = new Date();
     document.getElementById('tech-time-display').textContent =
+      shift + ' · ' +
       now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) + ' · ' +
       now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
   }
@@ -314,6 +326,7 @@
     var payload = {
       action:        'submitInspection',
       techName:      techName,
+      shift:         techShift,
       timestamp:     new Date().toISOString(),
       equipment:     eqName,
       location:      eqLoc,
