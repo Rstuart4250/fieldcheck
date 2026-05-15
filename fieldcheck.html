@@ -116,7 +116,7 @@
      ║  APPS_SCRIPT_URL paste your deployment URL here     ║
      ╚══════════════════════════════════════════════════════╝ -->
 <script>
-  const PHOTO_REQUIRED  = false;
+  const PHOTO_REQUIRED  = true;
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyp-3hXA7OEB1wBiG99E8HuF7UCwqA7HCH71AAwYBM-Om_aj8_BdmdUXyoqdXHXAfgp/exec';
 </script>
 
@@ -153,59 +153,25 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════
-       QUESTIONS
-       To add a question:
-         1. Copy any q-card block below
-         2. Increment the q-num and data-qid
-         3. Change the label text and input type
-         4. Add a matching answer collector in submitForm()
-       data-required="true" blocks submission if unanswered
-  ══════════════════════════════════════════════════════ -->
   <div class="section-label">Inspection</div>
 
-  <!-- Q1 — toggle / replace label + options when ready -->
+  <!-- Q1 — Screen change confirmation -->
   <div class="q-card" data-qid="q1" data-required="true">
     <div class="q-label">
       <span class="q-num">1</span>
-      Question 1 — add your label here<span class="req-star">*</span>
+      Screen Change Completed<span class="req-star">*</span>
     </div>
     <div class="toggle-group" id="q1-group">
-      <button class="t-btn" data-val="Option A" onclick="selectToggle('q1-group',this,'sel-green')">Option A</button>
-      <button class="t-btn" data-val="Option B" onclick="selectToggle('q1-group',this,'sel-yellow')">Option B</button>
-      <button class="t-btn" data-val="Option C" onclick="selectToggle('q1-group',this,'sel-red')">Option C</button>
+      <button class="t-btn" data-val="Confirmed" onclick="selectToggle('q1-group',this,'sel-green')">✓ Confirmed</button>
+      <button class="t-btn" data-val="Not Completed" onclick="selectToggle('q1-group',this,'sel-red')">✗ Not Completed</button>
     </div>
   </div>
-
-  <!-- Q2 — yes/no / replace label when ready -->
-  <div class="q-card" data-qid="q2" data-required="true">
-    <div class="q-label">
-      <span class="q-num">2</span>
-      Question 2 — add your label here<span class="req-star">*</span>
-    </div>
-    <div class="yn-group">
-      <button class="yn-btn yn-yes" id="q2-yes" onclick="setYN('q2',true)">YES</button>
-      <button class="yn-btn yn-no"  id="q2-no"  onclick="setYN('q2',false)">NO</button>
-    </div>
-  </div>
-
-  <!-- Q3 — text / replace label when ready -->
-  <div class="q-card" data-qid="q3" data-required="false">
-    <div class="q-label">
-      <span class="q-num">3</span>
-      Observations &amp; findings
-    </div>
-    <textarea class="field-textarea" id="q3-text" placeholder="Record any observations, readings, or findings…"></textarea>
-    <div class="field-hint">Leave blank if nothing to note.</div>
-  </div>
-
-  <!-- Add Q4 here when ready — copy any block above -->
 
   <!-- PHOTO -->
   <div class="section-label">Photo</div>
   <div class="q-card">
     <div class="q-label">
-      <span class="q-num">4</span>
+      <span class="q-num">2</span>
       Photo<span class="req-star" id="photo-req-star" style="display:none">*</span>
     </div>
     <div class="photo-zone" id="photo-zone" onclick="document.getElementById('photo-input').click()">
@@ -224,7 +190,7 @@
 
   <div class="submit-area">
     <div class="error-bar" id="submit-error"></div>
-    <button class="btn-submit" id="submit-btn" onclick="submitForm()">Submit Inspection</button>
+    <button class="btn-submit" id="submit-btn" onclick="submitForm()">Confirm &amp; Submit</button>
   </div>
 
 </div>
@@ -352,8 +318,6 @@
       equipment:     eqName,
       location:      eqLoc,
       q1:            togState['q1-group'] || '',
-      q2:            ynState['q2'] !== undefined ? (ynState['q2'] ? 'YES' : 'NO') : '',
-      q3:            document.getElementById('q3-text').value.trim(),
       photoBase64:   photoB64  || '',
       photoMimeType: photoMime || '',
       userAgent:     navigator.userAgent
