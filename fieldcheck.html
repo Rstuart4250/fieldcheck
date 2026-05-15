@@ -117,7 +117,7 @@
      ╚══════════════════════════════════════════════════════╝ -->
 <script>
   const PHOTO_REQUIRED  = false;
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuPdTO3UkjX_yvXMcKK1sZ9gy0szrbSfXI3z2mDSq2eRRyPP9JOLggmQGENOa1CClk/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpaqGrKIBiWkFn4ppjKDlFqaZtFCpUWhKeehsW3BIJYxKa0rQUcYnGiqoUEIFRAB0g/exec';
 </script>
 
 <div id="loading-overlay">
@@ -249,7 +249,7 @@
 
   window.onload = function () {
     var params = new URLSearchParams(window.location.search);
-    var name   = params.get('name') || params.get('equipment') || 'Unknown Equipment';
+    var name   = params.get('name') || params.get('equipment') || '(SBM) Grinder';
     var loc    = params.get('loc')  || params.get('location')  || '';
     document.getElementById('hdr-equipment').textContent = decodeURIComponent(name);
     if (loc) document.getElementById('hdr-sub').textContent = decodeURIComponent(loc);
